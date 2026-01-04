@@ -19,3 +19,27 @@ streamlit
 tqdm
 python-dotenv
 >>>>>>> 0944bc7a85a1eddaa0d4f0f6ad46d35301c01fcf
+# Core libraries
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.2.2
+tqdm>=4.65.0
+pickle5>=0.0.12
+
+# FAISS for vector search
+faiss-cpu>=1.7.4
+
+# Sentence Transformers for embeddings
+sentence-transformers>=2.2.2
+transformers>=4.35.0
+
+# Gradio for the chat interface
+gradio>=3.40.0
+
+# Optional visualization (EDA)
+matplotlib>=3.7.1
+seaborn>=0.12.2
+plotly>=5.16.1
+
+# Utilities
+requests>=2.31.0
