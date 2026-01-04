@@ -1,243 +1,241 @@
-# 🧠 RAG Complaint Chatbot
+# RAG Complaint Chatbot
 
-**Intelligent Complaint Analysis for Financial Services**
+[![Python](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-This repository contains the implementation of a **Retrieval-Augmented Generation (RAG)** system built using **CFPB consumer complaint data**.
-The project transforms raw, unstructured customer complaints into **searchable, evidence-backed insights** for internal teams such as Product, Support, and Compliance.
+## Project Overview
 
-This work is part of **10 Academy – AI Mastery (Week 7 Challenge)**.
+This repository contains the work for building a **Retrieval-Augmented Generation (RAG) chatbot** using the **CFPB consumer complaint dataset**. The chatbot allows users to ask questions about consumer complaints and receive accurate, context-aware answers, with sources shown for transparency.
 
----
+The project is organized into **four tasks**:
 
-## 📌 Project Overview
-
-CrediTrust Financial receives thousands of complaints each month across multiple financial products.
-Manual analysis is slow, inconsistent, and does not scale.
-
-This project addresses that challenge by:
-
-* Enabling **semantic search** over complaint narratives
-* Retrieving the most relevant complaint excerpts using vector similarity
-* Generating **grounded answers** with an LLM using retrieved evidence
-* Displaying **sources** to increase transparency and trust
+1. **Exploratory Data Analysis (EDA)**
+2. **Text Preparation for Semantic Search (Chunking, Embedding, FAISS Indexing)**
+3. **RAG Pipeline Implementation**
+4. **Interactive Chat Interface (Gradio)**
 
 ---
 
-## 🗂 Repository Structure
+## Table of Contents
+
+* [Project Overview](#project-overview)
+* [Dataset](#dataset)
+* [Tasks](#tasks)
+
+  * [Task 1: EDA](#task-1-eda)
+  * [Task 2: Text Chunking, Embedding, and FAISS Indexing](#task-2-text-chunking-embedding-and-faiss-indexing)
+  * [Task 3: RAG Pipeline](#task-3-rag-pipeline)
+  * [Task 4: Interactive Chat Interface](#task-4-interactive-chat-interface)
+* [Project Structure](#project-structure)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Results & Deliverables](#results--deliverables)
+* [Future Improvements](#future-improvements)
+
+---
+
+## Dataset
+
+We used the **Consumer Financial Protection Bureau (CFPB) complaints dataset**, which contains complaint narratives about financial products and services.
+
+* Total complaints used: **82,164**
+* Filtered complaints for key financial products: Credit Cards, Personal Loans, Savings Accounts, etc.
+* Cleaned and prepared dataset: `filtered_complaints.csv`
+
+**Source:** [CFPB Consumer Complaints](https://www.consumerfinance.gov/data-research/consumer-complaints/)
+
+---
+
+## Tasks
+
+### Task 1: Exploratory Data Analysis (EDA)
+
+**Objective:** Understand the structure and content of consumer complaints to guide preprocessing and model development.
+
+**Steps Completed:**
+
+* Loaded and inspected complaint dataset (`consumer_complaints.csv`)
+* Analyzed narrative lengths (0–6,469 words, mostly short complaints)
+* Visualized distribution of complaint lengths (right-skewed)
+* Cleaned text: lowercase, removed special characters and boilerplate phrases
+* Filtered dataset for relevant financial products
+
+**Deliverables:**
+
+* `filtered_complaints.csv`
+* Histogram visualizing narrative lengths
+* Task 1 notebook: `notebooks/task1_eda.ipynb`
+
+---
+
+### Task 2: Text Chunking, Embedding, and FAISS Indexing
+
+**Objective:** Convert complaints into a searchable format for semantic retrieval.
+
+**Steps Completed:**
+
+* Sampled ~15,000 complaints to preserve product proportions
+* Split long narratives into chunks (with overlap to maintain context)
+* Generated embeddings using `SentenceTransformer("all-MiniLM-L6-v2")`
+* Built **FAISS vector store** for semantic search
+* Stored metadata for each chunk: `complaint_id`, `product`, `chunk_index`, `text`
+
+**Deliverables:**
+
+* Notebook: `notebooks/text_chunking_embedding.ipynb`
+* Persisted FAISS vector store: `vector_store/faiss_index.bin`
+* Metadata pickle: `vector_store/metadata.pkl`
+
+---
+
+### Task 3: RAG Pipeline
+
+**Objective:** Build the logic for **Retrieval-Augmented Generation** using the FAISS vector store and an answer generator.
+
+**Steps Completed:**
+
+* Implemented `retrieve()` function: fetches top-k relevant chunks from FAISS based on a query
+* Implemented `generate_answer()` function: generates answers from retrieved chunks using a model or template-based generation
+* Created **pipeline module**: `src/pipeline.py`
+* Tested pipeline with sample queries
+
+**Deliverables:**
+
+* Python module: `src/pipeline.py`
+* Task 3 notebook: `notebooks/task3_rag_pipeline.ipynb` (used for testing, not required to run app)
+* Evaluation table & analysis included in final report
+
+---
+
+### Task 4: Interactive Chat Interface
+
+**Objective:** Build a **user-friendly interface** for non-technical users to interact with the RAG system.
+
+**Steps Completed:**
+
+* Built using **Gradio** (`app.py`)
+* Core functionality:
+
+  * Text input box for user queries
+  * "Ask" button to submit question
+  * Streaming or instant display of generated answer
+  * Display sources (retrieved chunks) for transparency
+  * "Clear" button to reset conversation
+* Tested locally and verified functionality
+
+**Deliverables:**
+
+* `app.py` (Gradio app)
+* Screenshots/GIF for report
+* Clean UI for easy interaction
+
+**Run locally:**
+
+```bash
+# Activate virtual environment
+venv\Scripts\Activate.ps1   # Windows PowerShell
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run Gradio app
+python app.py
+```
+
+* The app will provide a URL to open in a browser and start chatting with the RAG chatbot.
+
+---
+
+## Project Structure
 
 ```
 rag-complaint-chatbot/
-├── data/
-│   ├── raw/
-│   └── processed/
-├── vector_store/                # Persisted FAISS index
-├── notebooks/                   # EDA & experimentation
-│   ├── eda_preprocessing.ipynb
+├── app.py                        # Gradio chat interface
+├── filtered_complaints.csv       # Cleaned dataset
+├── notebooks/
+│   ├── task1_eda.ipynb
 │   ├── text_chunking_embedding.ipynb
-│   └── README.md
-├── src/                         # Modular production code
+│   └── task3_rag_pipeline.ipynb
+├── src/
 │   ├── __init__.py
-│   ├── data_loader.py
-│   ├── text_cleaning.py
-│   ├── chunking.py
-│   ├── embeddings.py
-│   ├── retriever.py
-│   ├── rag_pipeline.py
-│   └── prompt_templates.py
-├── tests/                       # Unit tests
-│   ├── test_chunking.py
-│   ├── test_embeddings.py
-│   └── test_retriever.py
-├── app.py                       # Gradio / Streamlit interface
+│   ├── pipeline.py               # RAG pipeline
+│   ├── retrieval.py              # Retrieval functions
+│   └── generator.py              # Answer generation functions
+├── vector_store/
+│   ├── faiss_index.bin
+│   └── metadata.pkl
 ├── requirements.txt
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
-> 🔍 **Note**: Initial development was notebook-driven for exploration and learning.
-> Core logic has been (or is being) **extracted into the `src/` package** to improve maintainability, testability, and production readiness.
-
 ---
 
-## ✅ Task 1: Exploratory Data Analysis (EDA) & Preprocessing
+## Installation
 
-### 🎯 Objective
+1. Clone the repository:
 
-Understand the structure, distribution, and quality of consumer complaint narratives and prepare clean text for downstream NLP tasks.
+```bash
+git clone https://github.com/<your-username>/rag-complaint-chatbot.git
+cd rag-complaint-chatbot
+```
 
-### 🔍 Key Steps
+2. Create a virtual environment:
 
-* Loaded **82,164 complaints** with complete narratives
-* Analyzed distribution across financial products
-* Analyzed narrative length:
+```bash
+python -m venv venv
+venv\Scripts\Activate.ps1   # Windows
+```
 
-  * Majority are **short (0–250 words)**
-  * A small number are **very long (up to ~6,400 words)**
-* Visualized narrative length distribution using a histogram
-  → Strong right-skewed distribution
-
-### 🧹 Text Cleaning
-
-* Converted text to lowercase
-* Removed special characters and boilerplate phrases
-* Filtered complaints to include:
-
-  * Credit Cards
-  * Personal Loans
-  * Savings Accounts
-  * Money Transfers
-
-### 📦 Deliverables
-
-* `data/processed/filtered_complaints.csv`
-* EDA notebook with visualizations
-* Written summary of findings
-
----
-
-## ✅ Task 2: Text Chunking, Embedding & Vector Store Indexing
-
-### 🎯 Objective
-
-Prepare complaint narratives for **semantic search** by converting them into embeddings and indexing them in a vector database.
-
-### 🔍 Key Steps
-
-### 1️⃣ Sampling
-
-* Stratified sample of **~10,000–15,000 complaints**
-* Maintained proportional representation across product categories
-
-### 2️⃣ Chunking
-
-* Split long narratives into overlapping chunks
-* Overlap preserved context across chunk boundaries
-* Logic later modularized into `src/chunking.py`
-
-### 3️⃣ Embedding
-
-* Used **`sentence-transformers/all-MiniLM-L6-v2`**
-* Chosen for speed, small size, and strong semantic performance
-* Implemented in `src/embeddings.py`
-
-### 4️⃣ Vector Store Indexing
-
-* Stored embeddings in **FAISS**
-* Persisted index to disk
-* Stored metadata with each chunk:
-
-  * complaint_id
-  * product_category
-  * issue / sub-issue
-* Metadata handling extracted into reusable functions
-
-### 📦 Deliverables
-
-* Chunking & embedding notebook
-* Persisted FAISS index in `vector_store/`
-* Modular embedding and indexing logic in `src/`
-
----
-
-## ✅ Task 3: RAG Core Logic & Evaluation
-
-### 🎯 Objective
-
-Build and evaluate a **retrieval-augmented generation pipeline** using the full-scale pre-built vector store.
-
-### 🧠 RAG Pipeline
-
-1. Embed user query
-2. Retrieve top-k relevant complaint chunks
-3. Inject retrieved context into a structured prompt
-4. Generate grounded answer using an LLM
-
-> ⚠️ **Note on Performance**
-> Loading large models (e.g., `Mistral-7B-Instruct`) may take **10–15+ minutes** on CPU-only machines. This is expected behavior.
-
-### 🧩 Prompt Engineering
-
-Prompts instruct the model to:
-
-* Act as a financial analyst
-* Use **only provided context**
-* Explicitly state when information is insufficient
-
-### 🧪 Evaluation
-
-* 5–10 representative business questions
-* Manual qualitative evaluation
-* Scored relevance, grounding, and clarity
-* Results documented in an evaluation table
-
-### 📦 Deliverables
-
-* Modular RAG logic in `src/rag_pipeline.py`
-* Evaluation table and analysis in final report
-
----
-
-## ✅ Task 4: Interactive Chat Interface
-
-### 🎯 Objective
-
-Provide a **simple, trustworthy UI** for non-technical users.
-
-### 🖥 Features
-
-* Question input box
-* Ask / Submit button
-* AI-generated answer
-* **Source complaint excerpts displayed**
-* Clear / Reset functionality
-* Optional streaming responses
-
-### 🛠 Tools
-
-* Gradio or Streamlit
-
-### 📦 Deliverables
-
-* `app.py`
-* Screenshots / GIFs in final report
-
----
-
-## 🧪 Testing & Code Quality Improvements
-
-Based on feedback, the project emphasizes:
-
-* ✅ **Extracting notebook logic into `src/` modules**
-* ✅ **Explicit metadata handling**
-* ✅ **Unit tests for chunking, embeddings, and retrieval**
-* ✅ **Cleaner separation between experimentation and production code**
-
-Tests are included under the `tests/` directory to ensure:
-
-* Chunk boundaries are respected
-* Embedding dimensions are correct
-* Retriever returns relevant results
-
----
-
-## 🚀 Usage
+3. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+---
+
+## Usage
+
+* **Run Task 3 pipeline (optional, testing):**
+
+```python
+from src.pipeline import rag_pipeline
+
+query = "What are common issues with credit cards?"
+answer, sources = rag_pipeline(query)
+print(answer)
+print(sources)
+```
+
+* **Run interactive chat (Task 4):**
+
+```bash
 python app.py
 ```
 
 ---
 
-## 🧾 Summary
+## Results & Deliverables
 
-This project demonstrates a full **end-to-end RAG system**:
-
-* **Task 1**: Data understanding and cleaning
-* **Task 2**: Chunking, embedding, and vector indexing
-* **Task 3**: Retrieval + generation with evaluation
-* **Task 4**: Interactive, trust-aware UI
-
-Incorporating reviewer feedback, the project evolves from **notebook-driven exploration** into a **modular, testable, production-oriented system**.
+* **EDA results**: complaint length histogram, data cleaning insights
+* **FAISS vector store**: semantic search enabled on complaint chunks
+* **RAG pipeline**: retrieval + generation logic, modularized in `src/`
+* **Interactive chatbot**: fully working Gradio app with sources displayed
+* **Final report**: evaluation table, pipeline analysis, screenshots
 
 ---
+
+## Future Improvements
+
+* Integrate **streaming generation** for token-by-token response
+* Use larger/fine-tuned LLMs for improved accuracy
+* Add **multi-turn conversation memory**
+* Deploy web app to **Heroku / Streamlit Cloud**
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+
+Do you want me to do that next?
