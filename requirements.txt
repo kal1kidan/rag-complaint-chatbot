@@ -1,0 +1,21 @@
+<<<<<<< HEAD
+pandas==2.1.0
+chromadb==0.4.0
+sentence-transformers==2.2.2
+langchain==0.1.0
+gradio==3.40.0
+python-dotenv==1.0.0
+=======
+pandas
+numpy
+scikit-learn
+sentence-transformers
+faiss-cpu
+langchain
+langchain-community
+transformers
+torch
+streamlit
+tqdm
+python-dotenv
+>>>>>>> 0944bc7a85a1eddaa0d4f0f6ad46d35301c01fcf

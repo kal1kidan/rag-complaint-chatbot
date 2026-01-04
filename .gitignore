@@ -1,0 +1,68 @@
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+*.manifest
+*.spec
+
+# Virtual environment
+venv/
+env/
+ENV/
+*.env
+
+# pip cache
+pip-log.txt
+pip-delete-this-directory.txt
+
+# pyenv
+.python-version
+
+# -------------------------
+# Jupyter / Notebooks
+# -------------------------
+.ipynb_checkpoints
+*.ipynb
+
+# -------------------------
+# VS Code
+# -------------------------
+.vscode/
+.history/
+*.code-workspace
+
+# -------------------------
+# Data / Outputs
+# -------------------------
+data/raw/
+data/processed/
+data/filtered_complaints.csv
+vector_store/
+*.sqlite
+*.db
+*.h5
+*.pkl
+
+# -------------------------
+# OS / system files
+# -------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+*.bak
+*.tmp
+
+# -------------------------
+# Other
+# -------------------------
+__pycache__/
+*.cache
+*.swp
+*.swo
